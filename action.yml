@@ -18,10 +18,11 @@ runs:
   using: composite
   steps:
     - name: Check permissions
-      if: env.ACTIONS_ID_TOKEN_REQUEST_URL == '' || env.ACTIONS_ID_TOKEN_REQUEST_TOKEN == ''
       run: |
-        echo "::error title=$GITHUB_ACTION_REPOSITORY::Missing OIDC environment variables. Ensure 'id-token: write' permission is set for this job."
-        exit 1
+        if [ -z "$ACTIONS_ID_TOKEN_REQUEST_URL" ] || [ -z "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" ]; then
+          echo "::error title=$GITHUB_ACTION_REPOSITORY::Missing OIDC environment variables. Ensure 'id-token: write' permission is set for this job."
+          exit 1
+        fi
       shell: bash
 
     - name: Check inputs
