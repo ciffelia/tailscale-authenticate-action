@@ -67,3 +67,7 @@ runs:
       env:
         OIDC_CLIENT_ID: ${{ inputs.client-id }}
         OIDC_ID_TOKEN: ${{ steps.get-id-token.outputs.id-token }}
+
+branding:
+  icon: lock
+  color: black
