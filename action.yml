@@ -43,7 +43,7 @@ runs:
         id_token=$(curl -fsSL --max-time 30 \
           "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$OIDC_AUDIENCE" \
           -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN"  \
-          | jq -r '.value')
+          | jq -r --exit-status '.value')
         echo "::add-mask::$id_token"
         echo "id-token=$id_token" >> "$GITHUB_OUTPUT"
         echo "Obtained ID token."
@@ -59,7 +59,7 @@ runs:
           https://api.tailscale.com/api/v2/oauth/token-exchange \
           -d "client_id=$OIDC_CLIENT_ID" \
           -d "jwt=$OIDC_ID_TOKEN" \
-          | jq -r '.access_token')
+          | jq -r --exit-status '.access_token')
         echo "::add-mask::$access_token"
         echo "access-token=$access_token" >> "$GITHUB_OUTPUT"
         echo "Exchanged ID token for access token."
