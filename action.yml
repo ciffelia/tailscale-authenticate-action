@@ -40,7 +40,8 @@ runs:
       id: get-id-token
       run: |
         set -u
-        id_token=$(curl -fsSL "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$OIDC_AUDIENCE" \
+        id_token=$(curl -fsSL --max-time 30 \
+          "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$OIDC_AUDIENCE" \
           -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN"  \
           | jq -r '.value')
         echo "::add-mask::$id_token"
@@ -54,7 +55,8 @@ runs:
       id: exchange-token
       run: |
         set -u
-        access_token=$(curl -fsSL https://api.tailscale.com/api/v2/oauth/token-exchange \
+        access_token=$(curl -fsSL --max-time 30 \
+          https://api.tailscale.com/api/v2/oauth/token-exchange \
           -d "client_id=$OIDC_CLIENT_ID" \
           -d "jwt=$OIDC_ID_TOKEN" \
           | jq -r '.access_token')
