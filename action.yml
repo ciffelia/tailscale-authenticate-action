@@ -24,6 +24,8 @@ runs:
           exit 1
         fi
       shell: bash
+      env:
+        GITHUB_ACTION_REPOSITORY: ${{ github.action_repository }}
 
     - name: Check inputs
       if: inputs.audience == '' || inputs.client-id == ''
@@ -31,6 +33,8 @@ runs:
         echo "::error title=$GITHUB_ACTION_REPOSITORY::Missing required inputs. Ensure 'audience' and 'client-id' are provided."
         exit 1
       shell: bash
+      env:
+        GITHUB_ACTION_REPOSITORY: ${{ github.action_repository }}
 
     - name: Get ID token
       id: get-id-token
