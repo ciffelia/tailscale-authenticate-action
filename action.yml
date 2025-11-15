@@ -20,21 +20,21 @@ runs:
     - name: Check permissions
       run: |
         if [ -z "$ACTIONS_ID_TOKEN_REQUEST_URL" ] || [ -z "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" ]; then
-          echo "::error title=$GITHUB_ACTION_REPOSITORY::Missing OIDC environment variables. Ensure 'id-token: write' permission is set for this job."
+          echo "::error title=$X_GITHUB_ACTION_REPOSITORY::Missing OIDC environment variables. Ensure 'id-token: write' permission is set for this job."
           exit 1
         fi
       shell: bash
       env:
-        GITHUB_ACTION_REPOSITORY: ${{ github.action_repository }}
+        X_GITHUB_ACTION_REPOSITORY: ${{ github.action_repository }}
 
     - name: Check inputs
       if: inputs.audience == '' || inputs.client-id == ''
       run: |
-        echo "::error title=$GITHUB_ACTION_REPOSITORY::Missing required inputs. Ensure 'audience' and 'client-id' are provided."
+        echo "::error title=$X_GITHUB_ACTION_REPOSITORY::Missing required inputs. Ensure 'audience' and 'client-id' are provided."
         exit 1
       shell: bash
       env:
-        GITHUB_ACTION_REPOSITORY: ${{ github.action_repository }}
+        X_GITHUB_ACTION_REPOSITORY: ${{ github.action_repository }}
 
     - name: Get ID token
       id: get-id-token
