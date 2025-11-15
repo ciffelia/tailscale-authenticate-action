@@ -1,17 +1,17 @@
-name: Tailscale Authenticate Action
-description: An action to obtain an access token for Tailscale API using OIDC.
+name: Authenticate to Tailscale API
+description: Issues a short-lived Tailscale API token for the workflow using its GitHub Actions OIDC identity.
 
 inputs:
-  audience:
-    description: The audience generated when you configured a trust credential in the Tailscale admin console
-    required: true
   client-id:
-    description: The client ID generated when you configured a trust credential in the Tailscale admin console
+    description: OAuth client ID of the trust credential
+    required: true
+  audience:
+    description: Audience value assigned to the trust credential
     required: true
 
 outputs:
   access-token:
-    description: The access token to access Tailscale API
+    description: Short-lived bearer token for the Tailscale API
     value: ${{ steps.exchange-token.outputs.access-token }}
 
 runs:
