@@ -1,5 +1,9 @@
 # tailscale-authenticate-action
 
+[![CI status](https://github.com/ciffelia/tailscale-authenticate-action/actions/workflows/ci.yaml/badge.svg)](https://github.com/ciffelia/tailscale-authenticate-action/actions/workflows/ci.yaml)
+[![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](./LICENSE)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ciffelia/tailscale-authenticate-action)
+
 Issue a short-lived Tailscale API token for a GitHub Actions workflow using its OIDC identity. Use it whenever a workflow needs to call the API without storing long‑lived API keys or OAuth client secrets.
 
 ## Prerequisites
