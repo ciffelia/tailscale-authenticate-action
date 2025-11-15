@@ -1,0 +1,73 @@
+name: Tailscale Authenticate Action
+description: An action to obtain an access token for Tailscale API using OIDC.
+
+inputs:
+  audience:
+    description: The audience generated when you configured a trust credential in the Tailscale admin console
+    required: true
+  client-id:
+    description: The client ID generated when you configured a trust credential in the Tailscale admin console
+    required: true
+
+outputs:
+  access-token:
+    description: The access token to access Tailscale API
+    value: ${{ steps.exchange-token.outputs.access-token }}
+
+runs:
+  using: composite
+  steps:
+    - name: Check permissions
+      run: |
+        if [ -z "$ACTIONS_ID_TOKEN_REQUEST_URL" ] || [ -z "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" ]; then
+          echo "::error::Missing OIDC environment variables. Ensure 'id-token: write' permission is set for this job."
+          exit 1
+        fi
+        echo "OIDC environment variables are set."
+      shell: bash
+
+    - name: Check inputs
+      run: |
+        if [ -z "$OIDC_AUDIENCE" ]; then
+          echo "::error::Input 'audience' is required."
+          exit 1
+        fi
+        if [ -z "$OIDC_CLIENT_ID" ]; then
+          echo "::error::Input 'client-id' is required."
+          exit 1
+        fi
+        echo "Required inputs are provided."
+      shell: bash
+      env:
+        OIDC_AUDIENCE: ${{ inputs.audience }}
+        OIDC_CLIENT_ID: ${{ inputs.client-id }}
+
+    - name: Get ID token
+      id: get-id-token
+      run: |
+        set -u
+        id_token=$(curl -fsSL "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$OIDC_AUDIENCE" \
+          -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN"  \
+          | jq -r '.value')
+        echo "::add-mask::$id_token"
+        echo "id-token=$id_token" >> "$GITHUB_OUTPUT"
+        echo "Obtained ID token."
+      shell: bash
+      env:
+        OIDC_AUDIENCE: ${{ inputs.audience }}
+
+    - name: Exchange token
+      id: exchange-token
+      run: |
+        set -u
+        access_token=$(curl -fsSL https://api.tailscale.com/api/v2/oauth/token-exchange \
+          -d "client_id=$OIDC_CLIENT_ID" \
+          -d "jwt=$OIDC_ID_TOKEN" \
+          | jq -r '.access_token')
+        echo "::add-mask::$access_token"
+        echo "access-token=$access_token" >> "$GITHUB_OUTPUT"
+        echo "Exchanged ID token for access token."
+      shell: bash
+      env:
+        OIDC_CLIENT_ID: ${{ inputs.client-id }}
+        OIDC_ID_TOKEN: ${{ steps.get-id-token.outputs.id-token }}
